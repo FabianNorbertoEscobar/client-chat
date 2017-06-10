@@ -10,14 +10,17 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
-public class Cliente extends Thread {
-	private Socket cliente;
+public class Client extends Thread {
+
+	private Map<String, Chat> chatsActivos = new HashMap<>();
+	private Socket client;
 	private static String miIp;
 	private ObjectInputStream entrada;
+
 	private ObjectOutputStream salida;
 	private Usuario usuario = new Usuario();
+
 	private ConjuntoMensaje conjuntoMensaje = new ConjuntoMensaje();
-	private Map<String, Chat> chatsActivos = new HashMap<>();
 
 	private int accion;
 	
@@ -26,21 +29,40 @@ public class Cliente extends Thread {
 	private String ip;
 	private int puerto;
 	
-	public Cliente(String newIp, int newPort) {
+	public Client(String newIp, int newPort) {
 		
 		this.ip = newIp;
 		this.puerto = newPort;
 		
 		try {
-			cliente = new Socket(ip, puerto);
-			miIp = cliente.getInetAddress().getHostAddress();
-			entrada = new ObjectInputStream(cliente.getInputStream());
-			salida = new ObjectOutputStream(cliente.getOutputStream());
+			client = new Socket(ip, puerto);
+			miIp = client.getInetAddress().getHostAddress();
+			entrada = new ObjectInputStream(client.getInputStream());
+			salida = new ObjectOutputStream(client.getOutputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
+	public ObjectInputStream getEntrada() {
+		return entrada;
+	}
+	
+	public void setEntrada(final ObjectInputStream entrada) {
+		this.entrada = entrada;
+	}
+	
+	public ObjectOutputStream getSalida() {
+		return salida;
+	}
+	
+	public void setSalida(final ObjectOutputStream salida) {
+		this.salida = salida;
+	}
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
 
 	@Override
 	public void run() {
@@ -102,11 +124,11 @@ public class Cliente extends Thread {
 	}
 	
 	public Socket getSocket() {
-		return cliente;
+		return client;
 	}
 
-	public void setSocket(final Socket cliente) {
-		this.cliente = cliente;
+	public void setSocket(final Socket client) {
+		this.client = client;
 	}
 
 	public static String getMiIp() {
@@ -115,26 +137,6 @@ public class Cliente extends Thread {
 
 	public void setMiIp(final String miIp) {
 		this.miIp = miIp;
-	}
-
-	public ObjectInputStream getEntrada() {
-		return entrada;
-	}
-	
-	public void setEntrada(final ObjectInputStream entrada) {
-		this.entrada = entrada;
-	}
-	
-	public ObjectOutputStream getSalida() {
-		return salida;
-	}
-	
-	public void setSalida(final ObjectOutputStream salida) {
-		this.salida = salida;
-	}
-
-	public Usuario getUsuario() {
-		return usuario;
 	}
 	
 	public ConjuntoMensaje getConjuntoMensaje() {

@@ -2,7 +2,7 @@ package client;
 
 import java.io.Serializable;
 
-public class ConjuntoMensaje extends Paquete implements Serializable, Cloneable {
+public class ConjuntoMensaje extends Conjunto implements Serializable, Cloneable {
 	
 		private static final long serialVersionUID = 1L;
 		private String userEmisor;

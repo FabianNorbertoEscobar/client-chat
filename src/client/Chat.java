@@ -22,7 +22,7 @@ public class Chat extends JFrame {
 	private JPanel contentPane;
 	private JTextField texto;
 	private JTextArea chat;
-	private Cliente client;
+	private Client client;
 
 	public JTextArea getChat() {
 		return chat;
@@ -32,9 +32,9 @@ public class Chat extends JFrame {
 		return texto;
 	}
 
-	public Chat(final Cliente cliente) {
+	public Chat(final Client client) {
 		setBackground(Color.PINK);
-		this.client = cliente;
+		this.client = client;
 		setTitle("Chat");
 		
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -70,17 +70,17 @@ public class Chat extends JFrame {
 					chat.append("Me: " + texto.getText() + "\n");
 
 					if(getTitle() != "Sala"){
-						cliente.setAccion(Mode.PRIVATE);
+						client.setAccion(Mode.PRIVATE);
 					} else {
-						cliente.setAccion(Mode.BROADCAST);
+						client.setAccion(Mode.BROADCAST);
 					}
 					
-					cliente.getConjuntoMensaje().setUserEmisor(cliente.getUsuario().getUsername());
-					cliente.getConjuntoMensaje().setUserReceptor(getTitle());
-					cliente.getConjuntoMensaje().setMensaje(texto.getText());
+					client.getConjuntoMensaje().setUserEmisor(client.getUsuario().getUsername());
+					client.getConjuntoMensaje().setUserReceptor(getTitle());
+					client.getConjuntoMensaje().setMensaje(texto.getText());
 					
-					synchronized (cliente) {
-						cliente.notify();
+					synchronized (client) {
+						client.notify();
 					}
 					texto.setText("");
 				}
@@ -95,17 +95,17 @@ public class Chat extends JFrame {
 					chat.append("Me: " + texto.getText() + "\n");
 
 					if(getTitle() != "Sala"){
-						cliente.setAccion(Mode.PRIVATE);
+						client.setAccion(Mode.PRIVATE);
 					} else {
-						cliente.setAccion(Mode.BROADCAST);
+						client.setAccion(Mode.BROADCAST);
 					}
 					
-					cliente.getConjuntoMensaje().setUserEmisor(cliente.getUsuario().getUsername());
-					cliente.getConjuntoMensaje().setUserReceptor(getTitle());
-					cliente.getConjuntoMensaje().setMensaje(texto.getText());
+					client.getConjuntoMensaje().setUserEmisor(client.getUsuario().getUsername());
+					client.getConjuntoMensaje().setUserReceptor(getTitle());
+					client.getConjuntoMensaje().setMensaje(texto.getText());
 					
-					synchronized (cliente) {
-						cliente.notify();
+					synchronized (client) {
+						client.notify();
 					}
 					texto.setText("");
 				}

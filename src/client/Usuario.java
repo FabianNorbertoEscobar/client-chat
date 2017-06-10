@@ -3,7 +3,7 @@ package client;
 import java.io.Serializable;
 import java.util.List;
 
-public class Usuario extends Paquete implements Serializable, Cloneable {
+public class Usuario extends Conjunto implements Serializable, Cloneable {
 
 	private String username;
 	private boolean inicioSesion;

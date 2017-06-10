@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class Usuarios extends Paquete implements Serializable, Cloneable {
+public class Usuarios extends Conjunto implements Serializable, Cloneable {
 
 		private static final long serialVersionUID = 1L;
 

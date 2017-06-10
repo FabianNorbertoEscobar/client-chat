@@ -24,14 +24,14 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import client.Mode;
-import client.Paquete;
+import client.Conjunto;
 import client.Usuario;
 import java.awt.Color;
 import java.awt.Font;
 
 public class Main extends JFrame {
 	private String user = null;
-	private Cliente cliente;
+	private Client client;
 	private Usuario usuario;
 	
 	private JPanel contentPane;
@@ -103,10 +103,10 @@ public class Main extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent arg0) {
-				if (cliente != null) {
-					synchronized (cliente) {
-						cliente.setAccion(Mode.DISCONNECT);
-						cliente.notify();
+				if (client != null) {
+					synchronized (client) {
+						client.setAccion(Mode.DISCONNECT);
+						client.notify();
 					}
 					setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 				}
@@ -128,9 +128,9 @@ public class Main extends JFrame {
 		botonMc.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(Integer.valueOf(lblNumeroConectados.getText()) != 0) {
-					if(!cliente.getChatsActivos().containsKey("Sala")) {
-						Chat chat = new Chat(cliente);
-						cliente.getChatsActivos().put("Sala", chat);
+					if(!client.getChatsActivos().containsKey("Sala")) {
+						Chat chat = new Chat(client);
+						client.getChatsActivos().put("Sala", chat);
 						chat.setTitle("Sala");
 						chat.setVisible(true);
 						botonMc.setEnabled(false);
@@ -160,13 +160,13 @@ public class Main extends JFrame {
 				puertoScanned = Integer.valueOf(puerto.getText());
 				user = username.getText();
 				if (user != null) {
-					cliente = new Cliente(ipScanned, puertoScanned);
-					cliente.start();
+					client = new Client(ipScanned, puertoScanned);
+					client.start();
 					
-                    while(cliente.getState() != Thread.State.WAITING) {	
+                    while(client.getState() != Thread.State.WAITING) {	
                     }
-					logIn(cliente);		
-					EscuchaServer em = new EscuchaServer(cliente);
+					logIn(client);		
+					EscuchaServer em = new EscuchaServer(client);
 					em.start();
 					
 					synchronized (this) {
@@ -177,16 +177,16 @@ public class Main extends JFrame {
 						}
 					}
 					
-					if(cliente.getUsuario().getMensaje().equals(Paquete.SUCCESS)) {
+					if(client.getUsuario().getMensaje().equals(Conjunto.SUCCESS)) {
 						setTitle(user);
 						nameTextField.setText(user);
-						actualizarLista(cliente);
+						actualizarLista(client);
 					} else {
 						try {
-							cliente.getSalida().close();
-							cliente.getEntrada().close();
-							cliente.getSocket().close();
-							cliente.stop();
+							client.getSalida().close();
+							client.getEntrada().close();
+							client.getSocket().close();
+							client.stop();
 							user = null;
 						} catch (IOException e1) {
 							e1.printStackTrace();
@@ -218,10 +218,10 @@ public class Main extends JFrame {
 		btnPrivate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(list.getSelectedValue() != null) {
-					if(!cliente.getChatsActivos().containsKey(list.getSelectedValue())) {
-						if (cliente != null) {
-							Chat chat = new Chat(cliente);
-							cliente.getChatsActivos().put(list.getSelectedValue(), chat);
+					if(!client.getChatsActivos().containsKey(list.getSelectedValue())) {
+						if (client != null) {
+							Chat chat = new Chat(client);
+							client.getChatsActivos().put(list.getSelectedValue(), chat);
 							chat.setTitle(list.getSelectedValue());
 							chat.setVisible(true);
 						}	
@@ -234,21 +234,21 @@ public class Main extends JFrame {
 		contentPane.add(btnPrivate);
 	}
 
-	private void logIn(final Cliente cliente) {
-		cliente.setAccion(Mode.LOGIN);
-		cliente.getUsuario().setUsername(user);
-		synchronized (cliente) {
-			cliente.notify();
+	private void logIn(final Client client) {
+		client.setAccion(Mode.LOGIN);
+		client.getUsuario().setUsername(user);
+		synchronized (client) {
+			client.notify();
 		}
 	}
 
-	private void actualizarLista(final Cliente cliente) {
-		if(cliente != null) {
-			synchronized (cliente) {
+	private void actualizarLista(final Client client) {
+		if(client != null) {
+			synchronized (client) {
 				modelo.removeAllElements();
-				if (cliente.getUsuario().getListaDeConectados() != null) {
-					cliente.getUsuario().getListaDeConectados().remove(cliente.getUsuario().getUsername());
-					for (String cad : cliente.getUsuario().getListaDeConectados()) {
+				if (client.getUsuario().getListaDeConectados() != null) {
+					client.getUsuario().getListaDeConectados().remove(client.getUsuario().getUsername());
+					for (String cad : client.getUsuario().getListaDeConectados()) {
 						modelo.addElement(cad);
 					}
 					lblNumeroConectados.setText(String.valueOf(modelo.getSize()));

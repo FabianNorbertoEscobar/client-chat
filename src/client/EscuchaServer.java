@@ -11,28 +11,28 @@ import com.google.gson.Gson;
 import client.Chat;
 import client.Main;
 import client.Mode;
-import client.Paquete;
+import client.Conjunto;
 import client.Usuarios;
 import client.ConjuntoMensaje;
 
 public class EscuchaServer extends Thread {
 
-	private Cliente cliente;
+	private Client client;
 	private ObjectInputStream entrada;
 	private final Gson gson = new Gson();
 	private Chat chat;
 
 	protected static ArrayList<String> usuariosConectados = new ArrayList<String>();
 
-	public EscuchaServer(final Cliente cliente) {
-		this.cliente = cliente;
-		this.entrada = cliente.getEntrada();
+	public EscuchaServer(final Client client) {
+		this.client = client;
+		this.entrada = client.getEntrada();
 	}
 
 	@Override
 	public void run() {
 		try {
-			Paquete paquete;
+			Conjunto conjunto;
 			ArrayList<String> usuariosAntiguos = new ArrayList<String>();
 			ArrayList<String> diferenciaContactos = new ArrayList<String>();
 
@@ -42,14 +42,14 @@ public class EscuchaServer extends Thread {
 				synchronized (entrada) {
 					objetoLeido = (String) entrada.readObject();	
 				}
-				paquete = gson.fromJson(objetoLeido, Paquete.class);
+				conjunto = gson.fromJson(objetoLeido, Conjunto.class);
 
-				switch (paquete.getMode()) {
+				switch (conjunto.getMode()) {
 				
 					case Mode.LOGIN:
-						cliente.getUsuario().setMensaje(paquete.getMensaje());
+						client.getUsuario().setMensaje(conjunto.getMensaje());
 						
-						if(paquete.getMensaje().equals(Paquete.FAILURE)) {
+						if(conjunto.getMensaje().equals(Conjunto.FAILURE)) {
 							this.stop();
 						} else {
 							usuariosConectados = (ArrayList<String>) gson.fromJson(objetoLeido, Usuarios.class).getPersonajes();							
@@ -67,46 +67,46 @@ public class EscuchaServer extends Thread {
 						diferenciaContactos.removeAll(usuariosConectados);
 						if(!diferenciaContactos.isEmpty()) {
 							for (String usuario : diferenciaContactos) {
-								if(cliente.getChatsActivos().containsKey(usuario)) {
-									cliente.getChatsActivos().get(usuario).getChat().append(usuario + " disconnected \n");
+								if(client.getChatsActivos().containsKey(usuario)) {
+									client.getChatsActivos().get(usuario).getChat().append(usuario + " disconnected \n");
 								}
 								usuariosAntiguos.remove(usuario);
 							}
 						}
-						cliente.getUsuario().setListaDeConectados(usuariosConectados);
-						actualizarLista(cliente);
+						client.getUsuario().setListaDeConectados(usuariosConectados);
+						actualizarLista(client);
 						break;
 
 					case Mode.PRIVATE:
 						
-						cliente.setConjuntoMensaje((ConjuntoMensaje) gson.fromJson(objetoLeido, ConjuntoMensaje.class));
+						client.setConjuntoMensaje((ConjuntoMensaje) gson.fromJson(objetoLeido, ConjuntoMensaje.class));
 						
-						if(!(cliente.getChatsActivos().containsKey(cliente.getConjuntoMensaje().getUserEmisor()))) {	
-							chat = new Chat(cliente);
+						if(!(client.getChatsActivos().containsKey(client.getConjuntoMensaje().getUserEmisor()))) {	
+							chat = new Chat(client);
 							
-							chat.setTitle(cliente.getConjuntoMensaje().getUserEmisor());
+							chat.setTitle(client.getConjuntoMensaje().getUserEmisor());
 							chat.setVisible(true);
 							
-							cliente.getChatsActivos().put(cliente.getConjuntoMensaje().getUserEmisor(), chat);
+							client.getChatsActivos().put(client.getConjuntoMensaje().getUserEmisor(), chat);
 						}
-						cliente.getChatsActivos().get(cliente.getConjuntoMensaje().getUserEmisor()).getChat().append(cliente.getConjuntoMensaje().getUserEmisor() + ": "  + cliente.getConjuntoMensaje().getMensaje() + "\n");
-						cliente.getChatsActivos().get(cliente.getConjuntoMensaje().getUserEmisor()).getTexto().grabFocus();
+						client.getChatsActivos().get(client.getConjuntoMensaje().getUserEmisor()).getChat().append(client.getConjuntoMensaje().getUserEmisor() + ": "  + client.getConjuntoMensaje().getMensaje() + "\n");
+						client.getChatsActivos().get(client.getConjuntoMensaje().getUserEmisor()).getTexto().grabFocus();
 						break;
 						
 					case Mode.BROADCAST:
 						
-						cliente.setConjuntoMensaje((ConjuntoMensaje) gson.fromJson(objetoLeido, ConjuntoMensaje.class));
-						if(!cliente.getChatsActivos().containsKey("Room")) {	
-							chat = new Chat(cliente);
+						client.setConjuntoMensaje((ConjuntoMensaje) gson.fromJson(objetoLeido, ConjuntoMensaje.class));
+						if(!client.getChatsActivos().containsKey("Room")) {	
+							chat = new Chat(client);
 							
 							chat.setTitle("Sala");
 							chat.setVisible(true);
 							
-							cliente.getChatsActivos().put("Room", chat);
+							client.getChatsActivos().put("Room", chat);
 							Main.getBotonMc().setEnabled(false);
 						}
-						cliente.getChatsActivos().get("Room").getChat().append(cliente.getConjuntoMensaje().getUserEmisor() + ": "  + cliente.getConjuntoMensaje().getMensaje() + "\n");
-						cliente.getChatsActivos().get("Room").getTexto().grabFocus();
+						client.getChatsActivos().get("Room").getChat().append(client.getConjuntoMensaje().getUserEmisor() + ": "  + client.getConjuntoMensaje().getMensaje() + "\n");
+						client.getChatsActivos().get("Room").getTexto().grabFocus();
 						break;
 				}
 			}
@@ -115,15 +115,15 @@ public class EscuchaServer extends Thread {
 		}
 	}
 
-	private void actualizarLista(final Cliente cliente) {
+	private void actualizarLista(final Client client) {
 		DefaultListModel<String> modelo = new DefaultListModel<String>();
-		synchronized (cliente) {
+		synchronized (client) {
 			try {
-				cliente.wait(200);
+				client.wait(200);
 				Main.getList().removeAll();
-				if (cliente.getUsuario().getListaDeConectados() != null) {
-					cliente.getUsuario().getListaDeConectados().remove(cliente.getUsuario().getUsername());
-					for (String cad : cliente.getUsuario().getListaDeConectados()) {
+				if (client.getUsuario().getListaDeConectados() != null) {
+					client.getUsuario().getListaDeConectados().remove(client.getUsuario().getUsername());
+					for (String cad : client.getUsuario().getListaDeConectados()) {
 						modelo.addElement(cad);
 					}
 					Main.getLblNumeroConectados().setText(String.valueOf(modelo.getSize()));
