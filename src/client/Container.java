@@ -1,6 +1,6 @@
 package client;
 
-public class Container {
+public class Container implements Cloneable {
 
 	public String ip;
 	public int mode;
@@ -21,5 +21,16 @@ public class Container {
 
 	public Container(int mode) {
 		this.mode = mode;
+	}
+	
+	public Object clone() {
+		Object obj = null;
+		try {
+			obj = super.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return obj;
 	}
 }
