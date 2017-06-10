@@ -70,14 +70,14 @@ public class Chat extends JFrame {
 					chat.append("Me: " + texto.getText() + "\n");
 
 					if(getTitle() != "Sala"){
-						cliente.setAccion(Comando.PRIVATE);
+						cliente.setAccion(Mode.PRIVATE);
 					} else {
-						cliente.setAccion(Comando.BROADCAST);
+						cliente.setAccion(Mode.BROADCAST);
 					}
 					
-					cliente.getPaqueteMensaje().setUserEmisor(cliente.getUsuario().getUsername());
-					cliente.getPaqueteMensaje().setUserReceptor(getTitle());
-					cliente.getPaqueteMensaje().setMensaje(texto.getText());
+					cliente.getConjuntoMensaje().setUserEmisor(cliente.getUsuario().getUsername());
+					cliente.getConjuntoMensaje().setUserReceptor(getTitle());
+					cliente.getConjuntoMensaje().setMensaje(texto.getText());
 					
 					synchronized (cliente) {
 						cliente.notify();
@@ -95,14 +95,14 @@ public class Chat extends JFrame {
 					chat.append("Me: " + texto.getText() + "\n");
 
 					if(getTitle() != "Sala"){
-						cliente.setAccion(Comando.PRIVATE);
+						cliente.setAccion(Mode.PRIVATE);
 					} else {
-						cliente.setAccion(Comando.BROADCAST);
+						cliente.setAccion(Mode.BROADCAST);
 					}
 					
-					cliente.getPaqueteMensaje().setUserEmisor(cliente.getUsuario().getUsername());
-					cliente.getPaqueteMensaje().setUserReceptor(getTitle());
-					cliente.getPaqueteMensaje().setMensaje(texto.getText());
+					cliente.getConjuntoMensaje().setUserEmisor(cliente.getUsuario().getUsername());
+					cliente.getConjuntoMensaje().setUserReceptor(getTitle());
+					cliente.getConjuntoMensaje().setMensaje(texto.getText());
 					
 					synchronized (cliente) {
 						cliente.notify();

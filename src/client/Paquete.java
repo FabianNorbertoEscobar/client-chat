@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class Paquete implements Serializable, Cloneable {
 	private String mensaje;
 	private String ip;
-	private int comando;
+	private int mode;
 
 	public static String SUCCESS = "1";
 	public static String FAILURE = "0";
@@ -13,19 +13,19 @@ public class Paquete implements Serializable, Cloneable {
 	public Paquete() {
 	}
 	
-	public Paquete(String mensaje, String nick, String ip, int comando) {
+	public Paquete(String mensaje, String nick, String ip, int mode) {
 		this.mensaje = mensaje;
 		this.ip = ip;
-		this.comando = comando;
+		this.mode = mode;
 	}
 	
-	public Paquete(String mensaje, int comando) {
+	public Paquete(String mensaje, int mode) {
 		this.mensaje = mensaje;
-		this.comando = comando;
+		this.mode = mode;
 	}
 
-	public Paquete(int comando) {
-		this.comando = comando;
+	public Paquete(int mode) {
+		this.mode = mode;
 	}
 
 	public void setMensaje(String mensaje) {
@@ -36,8 +36,8 @@ public class Paquete implements Serializable, Cloneable {
 		this.ip = ip;
 	}
 
-	public void setComando(int comando) {
-		this.comando = comando;
+	public void setMode(int mode) {
+		this.mode = mode;
 	}
 
 	public String getMensaje() {
@@ -48,8 +48,8 @@ public class Paquete implements Serializable, Cloneable {
 		return ip;
 	}
 
-	public int getComando() {
-		return comando;
+	public int getMode() {
+		return mode;
 	}
 	
 	public Object clone() {

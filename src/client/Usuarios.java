@@ -4,19 +4,21 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class PaqueteDeUsuarios extends Paquete implements Serializable, Cloneable {
+public class Usuarios extends Paquete implements Serializable, Cloneable {
+
+		private static final long serialVersionUID = 1L;
 
 		private ArrayList<String> usuarios;
 		private Map<String, Usuario> personajesConectados;
 
-		public PaqueteDeUsuarios(){
+		public Usuarios(){
 		}
 
 		public Map<String, Usuario> getPersonajesConectados() {
 			return personajesConectados;
 		}
 
-		public PaqueteDeUsuarios(ArrayList<String> usuarios){
+		public Usuarios(ArrayList<String> usuarios){
 			this.usuarios = usuarios;
 		}
 

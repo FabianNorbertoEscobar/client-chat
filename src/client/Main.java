@@ -23,7 +23,7 @@ import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
-import client.Comando;
+import client.Mode;
 import client.Paquete;
 import client.Usuario;
 import java.awt.Color;
@@ -105,7 +105,7 @@ public class Main extends JFrame {
 			public void windowClosing(WindowEvent arg0) {
 				if (cliente != null) {
 					synchronized (cliente) {
-						cliente.setAccion(Comando.DISCONNECT);
+						cliente.setAccion(Mode.DISCONNECT);
 						cliente.notify();
 					}
 					setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -235,7 +235,7 @@ public class Main extends JFrame {
 	}
 
 	private void logIn(final Cliente cliente) {
-		cliente.setAccion(Comando.LOGIN);
+		cliente.setAccion(Mode.LOGIN);
 		cliente.getUsuario().setUsername(user);
 		synchronized (cliente) {
 			cliente.notify();

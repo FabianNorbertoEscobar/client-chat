@@ -10,10 +10,10 @@ import com.google.gson.Gson;
 
 import client.Chat;
 import client.Main;
-import client.Comando;
+import client.Mode;
 import client.Paquete;
-import client.PaqueteDeUsuarios;
-import client.PaqueteMensaje;
+import client.Usuarios;
+import client.ConjuntoMensaje;
 
 public class EscuchaServer extends Thread {
 
@@ -44,20 +44,20 @@ public class EscuchaServer extends Thread {
 				}
 				paquete = gson.fromJson(objetoLeido, Paquete.class);
 
-				switch (paquete.getComando()) {
+				switch (paquete.getMode()) {
 				
-					case Comando.LOGIN:
+					case Mode.LOGIN:
 						cliente.getUsuario().setMensaje(paquete.getMensaje());
 						
 						if(paquete.getMensaje().equals(Paquete.FAILURE)) {
 							this.stop();
 						} else {
-							usuariosConectados = (ArrayList<String>) gson.fromJson(objetoLeido, PaqueteDeUsuarios.class).getPersonajes();							
+							usuariosConectados = (ArrayList<String>) gson.fromJson(objetoLeido, Usuarios.class).getPersonajes();							
 						}
 						break;
 						
-					case Comando.CONNECT:
-						usuariosConectados = (ArrayList<String>) gson.fromJson(objetoLeido, PaqueteDeUsuarios.class).getPersonajes();
+					case Mode.CONNECT:
+						usuariosConectados = (ArrayList<String>) gson.fromJson(objetoLeido, Usuarios.class).getPersonajes();
 						for (String usuario : usuariosConectados) {
 							if(!usuariosAntiguos.contains(usuario)) {
 								usuariosAntiguos.add(usuario);
@@ -77,25 +77,25 @@ public class EscuchaServer extends Thread {
 						actualizarLista(cliente);
 						break;
 
-					case Comando.PRIVATE:
+					case Mode.PRIVATE:
 						
-						cliente.setPaqueteMensaje((PaqueteMensaje) gson.fromJson(objetoLeido, PaqueteMensaje.class));
+						cliente.setConjuntoMensaje((ConjuntoMensaje) gson.fromJson(objetoLeido, ConjuntoMensaje.class));
 						
-						if(!(cliente.getChatsActivos().containsKey(cliente.getPaqueteMensaje().getUserEmisor()))) {	
+						if(!(cliente.getChatsActivos().containsKey(cliente.getConjuntoMensaje().getUserEmisor()))) {	
 							chat = new Chat(cliente);
 							
-							chat.setTitle(cliente.getPaqueteMensaje().getUserEmisor());
+							chat.setTitle(cliente.getConjuntoMensaje().getUserEmisor());
 							chat.setVisible(true);
 							
-							cliente.getChatsActivos().put(cliente.getPaqueteMensaje().getUserEmisor(), chat);
+							cliente.getChatsActivos().put(cliente.getConjuntoMensaje().getUserEmisor(), chat);
 						}
-						cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserEmisor()).getChat().append(cliente.getPaqueteMensaje().getUserEmisor() + ": "  + cliente.getPaqueteMensaje().getMensaje() + "\n");
-						cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserEmisor()).getTexto().grabFocus();
+						cliente.getChatsActivos().get(cliente.getConjuntoMensaje().getUserEmisor()).getChat().append(cliente.getConjuntoMensaje().getUserEmisor() + ": "  + cliente.getConjuntoMensaje().getMensaje() + "\n");
+						cliente.getChatsActivos().get(cliente.getConjuntoMensaje().getUserEmisor()).getTexto().grabFocus();
 						break;
 						
-					case Comando.BROADCAST:
+					case Mode.BROADCAST:
 						
-						cliente.setPaqueteMensaje((PaqueteMensaje) gson.fromJson(objetoLeido, PaqueteMensaje.class));
+						cliente.setConjuntoMensaje((ConjuntoMensaje) gson.fromJson(objetoLeido, ConjuntoMensaje.class));
 						if(!cliente.getChatsActivos().containsKey("Room")) {	
 							chat = new Chat(cliente);
 							
@@ -105,7 +105,7 @@ public class EscuchaServer extends Thread {
 							cliente.getChatsActivos().put("Room", chat);
 							Main.getBotonMc().setEnabled(false);
 						}
-						cliente.getChatsActivos().get("Room").getChat().append(cliente.getPaqueteMensaje().getUserEmisor() + ": "  + cliente.getPaqueteMensaje().getMensaje() + "\n");
+						cliente.getChatsActivos().get("Room").getChat().append(cliente.getConjuntoMensaje().getUserEmisor() + ": "  + cliente.getConjuntoMensaje().getMensaje() + "\n");
 						cliente.getChatsActivos().get("Room").getTexto().grabFocus();
 						break;
 				}

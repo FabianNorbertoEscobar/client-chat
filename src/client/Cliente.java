@@ -16,7 +16,7 @@ public class Cliente extends Thread {
 	private ObjectInputStream entrada;
 	private ObjectOutputStream salida;
 	private Usuario usuario = new Usuario();
-	private PaqueteMensaje paqueteMensaje = new PaqueteMensaje();
+	private ConjuntoMensaje conjuntoMensaje = new ConjuntoMensaje();
 	private Map<String, Chat> chatsActivos = new HashMap<>();
 
 	private int accion;
@@ -54,25 +54,25 @@ public class Cliente extends Thread {
 					
 					switch (getAccion()) {
 					
-						case Comando.LOGIN:
-							usuario.setComando(Comando.LOGIN);
+						case Mode.LOGIN:
+							usuario.setMode(Mode.LOGIN);
 							salida.writeObject(gson.toJson(usuario));
 							break;
 							
-						case Comando.PRIVATE:
-							paqueteMensaje.setComando(Comando.PRIVATE);
-							salida.writeObject(gson.toJson(paqueteMensaje));
+						case Mode.PRIVATE:
+							conjuntoMensaje.setMode(Mode.PRIVATE);
+							salida.writeObject(gson.toJson(conjuntoMensaje));
 							
 							break;
 							
-						case Comando.BROADCAST:
-							paqueteMensaje.setComando(Comando.BROADCAST);
-							salida.writeObject(gson.toJson(paqueteMensaje));
+						case Mode.BROADCAST:
+							conjuntoMensaje.setMode(Mode.BROADCAST);
+							salida.writeObject(gson.toJson(conjuntoMensaje));
 							break;
 							
-						case Comando.DISCONNECT:
+						case Mode.DISCONNECT:
 							usuario.setIp(getMiIp());
-							usuario.setComando(Comando.DISCONNECT);
+							usuario.setMode(Mode.DISCONNECT);
 							salida.writeObject(gson.toJson(usuario));
 							break;
 							
@@ -137,14 +137,14 @@ public class Cliente extends Thread {
 		return usuario;
 	}
 	
-	public PaqueteMensaje getPaqueteMensaje() {
-		return paqueteMensaje;
+	public ConjuntoMensaje getConjuntoMensaje() {
+		return conjuntoMensaje;
 	}
 
-	public void setPaqueteMensaje(PaqueteMensaje fromJson) {
-		this.paqueteMensaje.setMensaje(fromJson.getMensaje());
-		this.paqueteMensaje.setUserEmisor(fromJson.getUserEmisor());
-		this.paqueteMensaje.setUserReceptor(fromJson.getUserReceptor());
+	public void setConjuntoMensaje(ConjuntoMensaje fromJson) {
+		this.conjuntoMensaje.setMensaje(fromJson.getMensaje());
+		this.conjuntoMensaje.setUserEmisor(fromJson.getUserEmisor());
+		this.conjuntoMensaje.setUserReceptor(fromJson.getUserReceptor());
 	}
 
 	public Map<String, Chat> getChatsActivos() {
