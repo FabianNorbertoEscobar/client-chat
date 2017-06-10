@@ -69,7 +69,7 @@ public class Chat extends JFrame {
 				if(!texto.getText().equals("")) {
 					chat.append("Me: " + texto.getText() + "\n");
 
-					if(getTitle() != "Sala"){
+					if(getTitle() != "Room"){
 						client.setAccion(Mode.PRIVATE);
 					} else {
 						client.setAccion(Mode.BROADCAST);
@@ -94,7 +94,7 @@ public class Chat extends JFrame {
 				if(!texto.getText().equals("")) {
 					chat.append("Me: " + texto.getText() + "\n");
 
-					if(getTitle() != "Sala"){
+					if(getTitle() != "Room"){
 						client.setAccion(Mode.PRIVATE);
 					} else {
 						client.setAccion(Mode.BROADCAST);
@@ -120,7 +120,7 @@ public class Chat extends JFrame {
 			public void windowClosing(WindowEvent arg0) {
 				client.getChatsActivos().remove(getTitle());
 				if(!client.getChatsActivos().containsKey("Sala")) {
-					Main.getBotonMc().setEnabled(true);
+					Main.getBotonBroadcast().setEnabled(true);
 				}
 				dispose();
 			}

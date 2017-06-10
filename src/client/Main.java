@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -39,10 +40,10 @@ public class Main extends JFrame {
 	private static JList<String> list = new JList<String>();
 	private JTextField nameTextField;
 	private static JLabel lblNumeroConectados = new JLabel("");
-	private static JButton botonMc;
+	private static JButton botonBroadcast;
 
 	private String ipScanned = "localhost";
-	private String usernameScanned = "";
+	private String usernameScanned = "username";
 	private int puertoScanned = 3000;
 	
 	/**
@@ -73,31 +74,29 @@ public class Main extends JFrame {
 		return list;
 	}
 	
-	public static JButton getBotonMc() {
-		return botonMc;
+	public static JButton getBotonBroadcast() {
+		return botonBroadcast;
 	}
-	
-	public Main() {
 
+	public Main() {
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 399, 300);
 		setLocationRelativeTo(null);
 		
-		JTextField ip = new JTextField(5);
-		JTextField puerto = new JTextField(5);
-		JTextField username = new JTextField(5);
+		JTextField ip = new JTextField(20);
+		JTextField puerto = new JTextField(20);
+		JTextField username = new JTextField(20);
 		
 		ip.setText(ipScanned);
 		puerto.setText(String.valueOf(puertoScanned));
+		username.setText(String.valueOf(usernameScanned));
 		
 		JPanel loginPanel = new JPanel();
 		loginPanel.setLayout(new GridLayout(3,3));
-		loginPanel.add(new JLabel("IP: "));
+		loginPanel.setBackground(Color.PINK);
 		loginPanel.add(ip);
-		loginPanel.add(new JLabel("Port: "));
 		loginPanel.add(puerto);
-		loginPanel.add(new JLabel("User: "));
 		loginPanel.add(username);
 		
 		addWindowListener(new WindowAdapter() {
@@ -124,22 +123,22 @@ public class Main extends JFrame {
 		scrollPane.setBounds(10, 11, 377, 186);
 		contentPane.add(scrollPane);
 
-		botonMc = new JButton("Room");
-		botonMc.addActionListener(new ActionListener() {
+		botonBroadcast = new JButton("Room");
+		botonBroadcast.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(Integer.valueOf(lblNumeroConectados.getText()) != 0) {
 					if(!client.getChatsActivos().containsKey("Sala")) {
 						Chat chat = new Chat(client);
-						client.getChatsActivos().put("Sala", chat);
-						chat.setTitle("Sala");
+						client.getChatsActivos().put("Room", chat);
+						chat.setTitle("Room");
 						chat.setVisible(true);
-						botonMc.setEnabled(false);
+						botonBroadcast.setEnabled(false);
 					}
 				}
 			}
 		});
-		botonMc.setBounds(253, 220, 134, 46);
-		contentPane.add(botonMc);
+		botonBroadcast.setBounds(253, 220, 134, 46);
+		contentPane.add(botonBroadcast);
 		
 		nameTextField = new JTextField();
 		nameTextField.setHorizontalAlignment(SwingConstants.LEFT);
@@ -153,6 +152,10 @@ public class Main extends JFrame {
 		scrollPane.setViewportView(list);
 
 		if (user == null) {
+			UIManager UI=new UIManager();
+			UI.put("OptionPane.background", Color.PINK);
+			UI.put("Panel.background", Color.PINK);
+
 			int result = JOptionPane.showConfirmDialog(null, loginPanel, "Login", JOptionPane.OK_CANCEL_OPTION);
 
 			if (result == JOptionPane.OK_OPTION) {
@@ -162,16 +165,14 @@ public class Main extends JFrame {
 				if (user != null) {
 					client = new Client(ipScanned, puertoScanned);
 					client.start();
-					
-                    while(client.getState() != Thread.State.WAITING) {	
-                    }
+                    while(client.getState() != Thread.State.WAITING) {}
 					logIn(client);		
-					EscuchaServer em = new EscuchaServer(client);
+					ServerListener em = new ServerListener(client);
 					em.start();
 					
 					synchronized (this) {
 						try {
-							this.wait(200);
+							this.wait(100);
 						} catch (InterruptedException e1) {
 							e1.printStackTrace();
 						}

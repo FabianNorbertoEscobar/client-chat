@@ -4,7 +4,6 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
 
 import com.google.gson.Gson;
 
@@ -15,16 +14,41 @@ import client.Conjunto;
 import client.Usuarios;
 import client.ConjuntoMensaje;
 
-public class EscuchaServer extends Thread {
+public class ServerListener extends Thread {
 
-	private Client client;
-	private ObjectInputStream entrada;
 	private final Gson gson = new Gson();
 	private Chat chat;
+	
+	private Client client;
+	private ObjectInputStream entrada;
 
 	protected static ArrayList<String> usuariosConectados = new ArrayList<String>();
 
-	public EscuchaServer(final Client client) {
+	private void actualizarLista(final Client client) {
+		DefaultListModel<String> modelo = new DefaultListModel<String>();
+		synchronized (client) {
+			try {
+				client.wait(200);
+				Main.getList().removeAll();
+				if (client.getUsuario().getListaDeConectados() != null) {
+					client.getUsuario().getListaDeConectados().remove(client.getUsuario().getUsername());
+					for (String cad : client.getUsuario().getListaDeConectados()) {
+						modelo.addElement(cad);
+					}
+					Main.getLblNumeroConectados().setText(String.valueOf(modelo.getSize()));
+					Main.getList().setModel(modelo);
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static ArrayList<String> getUsuariosConectados() {
+		return usuariosConectados;
+	}
+	
+	public ServerListener(final Client client) {
 		this.client = client;
 		this.entrada = client.getEntrada();
 	}
@@ -99,11 +123,11 @@ public class EscuchaServer extends Thread {
 						if(!client.getChatsActivos().containsKey("Room")) {	
 							chat = new Chat(client);
 							
-							chat.setTitle("Sala");
+							chat.setTitle("Room");
 							chat.setVisible(true);
 							
 							client.getChatsActivos().put("Room", chat);
-							Main.getBotonMc().setEnabled(false);
+							Main.getBotonBroadcast().setEnabled(false);
 						}
 						client.getChatsActivos().get("Room").getChat().append(client.getConjuntoMensaje().getUserEmisor() + ": "  + client.getConjuntoMensaje().getMensaje() + "\n");
 						client.getChatsActivos().get("Room").getTexto().grabFocus();
@@ -113,29 +137,5 @@ public class EscuchaServer extends Thread {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	private void actualizarLista(final Client client) {
-		DefaultListModel<String> modelo = new DefaultListModel<String>();
-		synchronized (client) {
-			try {
-				client.wait(200);
-				Main.getList().removeAll();
-				if (client.getUsuario().getListaDeConectados() != null) {
-					client.getUsuario().getListaDeConectados().remove(client.getUsuario().getUsername());
-					for (String cad : client.getUsuario().getListaDeConectados()) {
-						modelo.addElement(cad);
-					}
-					Main.getLblNumeroConectados().setText(String.valueOf(modelo.getSize()));
-					Main.getList().setModel(modelo);
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public static ArrayList<String> getUsuariosConectados() {
-		return usuariosConectados;
 	}
 }
