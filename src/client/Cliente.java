@@ -8,8 +8,6 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JOptionPane;
-
 import com.google.gson.Gson;
 
 public class Cliente extends Thread {
@@ -19,7 +17,7 @@ public class Cliente extends Thread {
 	private ObjectOutputStream salida;
 	private PaqueteUsuario paqueteUsuario = new PaqueteUsuario();
 	private PaqueteMensaje paqueteMensaje = new PaqueteMensaje();
-	private Map<String, MiChat> chatsActivos = new HashMap<>();
+	private Map<String, Chat> chatsActivos = new HashMap<>();
 
 	private int accion;
 	
@@ -39,9 +37,6 @@ public class Cliente extends Thread {
 			entrada = new ObjectInputStream(cliente.getInputStream());
 			salida = new ObjectOutputStream(cliente.getOutputStream());
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Fallo al iniciar la aplicación. "
-					+ "Revise la conexión con el servidor.");
-			System.exit(1);
 			e.printStackTrace();
 		}
 	}
@@ -51,38 +46,33 @@ public class Cliente extends Thread {
 	public void run() {
 		synchronized(this) {
 			try {
-				// Creo el paquete que le voy a enviar al servidor
+
 				paqueteUsuario = new PaqueteUsuario();
 				while (!paqueteUsuario.isInicioSesion()) {
-					
-					// Espero a que el usuario seleccione alguna accion
+
 					wait();
 					
 					switch (getAccion()) {
 					
-						case Comando.INICIOSESION:
-							paqueteUsuario.setComando(Comando.INICIOSESION);
-							// Le envio el paquete al servidor
+						case Comando.LOGIN:
+							paqueteUsuario.setComando(Comando.LOGIN);
 							salida.writeObject(gson.toJson(paqueteUsuario));
 							break;
 							
-						case Comando.TALK:
-							paqueteMensaje.setComando(Comando.TALK);
-							// Le envio el paquete al servidor
+						case Comando.PRIVATE:
+							paqueteMensaje.setComando(Comando.PRIVATE);
 							salida.writeObject(gson.toJson(paqueteMensaje));
 							
 							break;
 							
-						case Comando.CHATALL:
-							paqueteMensaje.setComando(Comando.CHATALL);
-							// Le envio el paquete al servidor
+						case Comando.BROADCAST:
+							paqueteMensaje.setComando(Comando.BROADCAST);
 							salida.writeObject(gson.toJson(paqueteMensaje));
 							break;
 							
-						case Comando.DESCONECTAR:
+						case Comando.DISCONNECT:
 							paqueteUsuario.setIp(getMiIp());
-							paqueteUsuario.setComando(Comando.DESCONECTAR);
-							// Le envio el paquete al servidor
+							paqueteUsuario.setComando(Comando.DISCONNECT);
 							salida.writeObject(gson.toJson(paqueteUsuario));
 							break;
 							
@@ -98,8 +88,6 @@ public class Cliente extends Thread {
 				notify();
 				
 			} catch (IOException | InterruptedException e) {
-				JOptionPane.showMessageDialog(null, "Fallo la conexión del Cliente.");
-				e.printStackTrace();
 				System.exit(1);
 			}
 		}
@@ -159,11 +147,11 @@ public class Cliente extends Thread {
 		this.paqueteMensaje.setUserReceptor(fromJson.getUserReceptor());
 	}
 
-	public Map<String, MiChat> getChatsActivos() {
+	public Map<String, Chat> getChatsActivos() {
 		return chatsActivos;
 	}
 
-	public void setChatsActivos(Map<String, MiChat> chatsActivos) {
+	public void setChatsActivos(Map<String, Chat> chatsActivos) {
 		this.chatsActivos = chatsActivos;
 	}
 }

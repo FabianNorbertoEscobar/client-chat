@@ -8,8 +8,8 @@ import javax.swing.JOptionPane;
 
 import com.google.gson.Gson;
 
-import client.MiChat;
-import client.VentanaContactos;
+import client.Chat;
+import client.Main;
 import client.Comando;
 import client.Paquete;
 import client.PaqueteDeUsuarios;
@@ -20,7 +20,7 @@ public class EscuchaServer extends Thread {
 	private Cliente cliente;
 	private ObjectInputStream entrada;
 	private final Gson gson = new Gson();
-	private MiChat chat;
+	private Chat chat;
 
 	protected static ArrayList<String> usuariosConectados = new ArrayList<String>();
 
@@ -46,21 +46,17 @@ public class EscuchaServer extends Thread {
 
 				switch (paquete.getComando()) {
 				
-					case Comando.INICIOSESION:
+					case Comando.LOGIN:
 						cliente.getPaqueteUsuario().setMensaje(paquete.getMensaje());
 						
 						if(paquete.getMensaje().equals(Paquete.msjFracaso)) {
-							JOptionPane.showMessageDialog(null, "Usuario existente, por favor logee con otro usuario.");
 							this.stop();
 						} else {
 							usuariosConectados = (ArrayList<String>) gson.fromJson(objetoLeido, PaqueteDeUsuarios.class).getPersonajes();							
 						}
 						break;
 						
-					// CONEXION = SE CONECTO OTRO USUARIO, ENTONCES LE MANDO LA LISTA
-					// A TODOS LOS USUARIOS ANTERIORES A EL
-						
-					case Comando.CONEXION:
+					case Comando.CONNECT:
 						usuariosConectados = (ArrayList<String>) gson.fromJson(objetoLeido, PaqueteDeUsuarios.class).getPersonajes();
 						for (String usuario : usuariosConectados) {
 							if(!usuariosAntiguos.contains(usuario)) {
@@ -72,7 +68,7 @@ public class EscuchaServer extends Thread {
 						if(!diferenciaContactos.isEmpty()) {
 							for (String usuario : diferenciaContactos) {
 								if(cliente.getChatsActivos().containsKey(usuario)) {
-									cliente.getChatsActivos().get(usuario).getChat().append("El usuario: " + usuario + " se ha desconectado\n");
+									cliente.getChatsActivos().get(usuario).getChat().append(usuario + " disconnected \n");
 								}
 								usuariosAntiguos.remove(usuario);
 							}
@@ -80,14 +76,13 @@ public class EscuchaServer extends Thread {
 						cliente.getPaqueteUsuario().setListaDeConectados(usuariosConectados);
 						actualizarLista(cliente);
 						break;
-					
-					// ACA RECIBI EL MENSAJE DEL OTRO CLIENTE
-					case Comando.TALK:
+
+					case Comando.PRIVATE:
 						
 						cliente.setPaqueteMensaje((PaqueteMensaje) gson.fromJson(objetoLeido, PaqueteMensaje.class));
 						
 						if(!(cliente.getChatsActivos().containsKey(cliente.getPaqueteMensaje().getUserEmisor()))) {	
-							chat = new MiChat(cliente);
+							chat = new Chat(cliente);
 							
 							chat.setTitle(cliente.getPaqueteMensaje().getUserEmisor());
 							chat.setVisible(true);
@@ -98,25 +93,24 @@ public class EscuchaServer extends Thread {
 						cliente.getChatsActivos().get(cliente.getPaqueteMensaje().getUserEmisor()).getTexto().grabFocus();
 						break;
 						
-					case Comando.CHATALL:
+					case Comando.BROADCAST:
 						
 						cliente.setPaqueteMensaje((PaqueteMensaje) gson.fromJson(objetoLeido, PaqueteMensaje.class));
-						if(!cliente.getChatsActivos().containsKey("Sala")) {	
-							chat = new MiChat(cliente);
+						if(!cliente.getChatsActivos().containsKey("Room")) {	
+							chat = new Chat(cliente);
 							
 							chat.setTitle("Sala");
 							chat.setVisible(true);
 							
-							cliente.getChatsActivos().put("Sala", chat);
-							VentanaContactos.getBotonMc().setEnabled(false);
+							cliente.getChatsActivos().put("Room", chat);
+							Main.getBotonMc().setEnabled(false);
 						}
-						cliente.getChatsActivos().get("Sala").getChat().append(cliente.getPaqueteMensaje().getUserEmisor() + ": "  + cliente.getPaqueteMensaje().getMensaje() + "\n");
-						cliente.getChatsActivos().get("Sala").getTexto().grabFocus();
+						cliente.getChatsActivos().get("Room").getChat().append(cliente.getPaqueteMensaje().getUserEmisor() + ": "  + cliente.getPaqueteMensaje().getMensaje() + "\n");
+						cliente.getChatsActivos().get("Room").getTexto().grabFocus();
 						break;
 				}
 			}
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Fallo la conexión con el servidor.");
 			e.printStackTrace();
 		}
 	}
@@ -126,14 +120,14 @@ public class EscuchaServer extends Thread {
 		synchronized (cliente) {
 			try {
 				cliente.wait(300);
-				VentanaContactos.getList().removeAll();
+				Main.getList().removeAll();
 				if (cliente.getPaqueteUsuario().getListaDeConectados() != null) {
 					cliente.getPaqueteUsuario().getListaDeConectados().remove(cliente.getPaqueteUsuario().getUsername());
 					for (String cad : cliente.getPaqueteUsuario().getListaDeConectados()) {
 						modelo.addElement(cad);
 					}
-					VentanaContactos.getLblNumeroConectados().setText(String.valueOf(modelo.getSize()));
-					VentanaContactos.getList().setModel(modelo);
+					Main.getLblNumeroConectados().setText(String.valueOf(modelo.getSize()));
+					Main.getList().setModel(modelo);
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();

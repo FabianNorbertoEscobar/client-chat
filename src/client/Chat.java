@@ -17,17 +17,14 @@ import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import java.awt.Font;
 
-public class MiChat extends JFrame {
+public class Chat extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField texto;
 	private JTextArea chat;
 	private Cliente client;
-	
-	/**
-	 * Create the frame. 
-	 */
-	public MiChat(final Cliente cliente) {
+
+	public Chat(final Cliente cliente) {
 		setBackground(Color.PINK);
 		this.client = cliente;
 		setTitle("Chat");
@@ -59,17 +56,15 @@ public class MiChat extends JFrame {
 			}
 		});
 		
-		//SI TOCO ENTER
 		texto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(!texto.getText().equals("")) {
 					chat.append("Me: " + texto.getText() + "\n");
-					
-					// MANDO EL COMANDO PARA QUE ENVIE EL MSJ
+
 					if(getTitle() != "Sala"){
-						cliente.setAccion(Comando.TALK);
+						cliente.setAccion(Comando.PRIVATE);
 					} else {
-						cliente.setAccion(Comando.CHATALL);
+						cliente.setAccion(Comando.BROADCAST);
 					}
 					
 					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
@@ -84,19 +79,17 @@ public class MiChat extends JFrame {
 				texto.requestFocus();
 			}
 		});
-		
-		//SI TOCO ENVIAR
+
 		JButton enviar = new JButton("Send");
 		enviar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(!texto.getText().equals("")) {
 					chat.append("Me: " + texto.getText() + "\n");
-					
-					// MANDO EL COMANDO PARA QUE ENVIE EL MSJ
+
 					if(getTitle() != "Sala"){
-						cliente.setAccion(Comando.TALK);
+						cliente.setAccion(Comando.PRIVATE);
 					} else {
-						cliente.setAccion(Comando.CHATALL);
+						cliente.setAccion(Comando.BROADCAST);
 					}
 					
 					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
@@ -113,14 +106,13 @@ public class MiChat extends JFrame {
 		});
 		enviar.setBounds(460, 400, 127, 50);
 		contentPane.add(enviar);
-		
-		//SI CIERRO VENTANA
+
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent arg0) {
 				client.getChatsActivos().remove(getTitle());
 				if(!client.getChatsActivos().containsKey("Sala")) {
-					VentanaContactos.getBotonMc().setEnabled(true);
+					Main.getBotonMc().setEnabled(true);
 				}
 				dispose();
 			}

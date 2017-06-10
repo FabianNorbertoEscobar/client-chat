@@ -27,6 +27,7 @@ import client.Comando;
 import client.Paquete;
 import client.PaqueteUsuario;
 import java.awt.Color;
+import java.awt.Font;
 
 public class Main extends JFrame {
 	private String user = null;
@@ -60,9 +61,6 @@ public class Main extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public Main() {
 
 		setResizable(false);
@@ -91,7 +89,7 @@ public class Main extends JFrame {
 			public void windowClosing(WindowEvent arg0) {
 				if (cliente != null) {
 					synchronized (cliente) {
-						cliente.setAccion(Comando.DESCONECTAR);
+						cliente.setAccion(Comando.DISCONNECT);
 						cliente.notify();
 					}
 					setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -115,7 +113,7 @@ public class Main extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if(Integer.valueOf(lblNumeroConectados.getText()) != 0) {
 					if(!cliente.getChatsActivos().containsKey("Sala")) {
-						MiChat chat = new MiChat(cliente);
+						Chat chat = new Chat(cliente);
 						cliente.getChatsActivos().put("Sala", chat);
 						chat.setTitle("Sala");
 						chat.setVisible(true);
@@ -133,6 +131,7 @@ public class Main extends JFrame {
 		jTFMiNombre.setBounds(67, 320, 242, 22);
 		contentPane.add(jTFMiNombre);
 		jTFMiNombre.setColumns(10);
+		list.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
 
 		list.setModel(modelo);
 		scrollPane.setViewportView(list);
@@ -205,7 +204,7 @@ public class Main extends JFrame {
 				if(list.getSelectedValue() != null) {
 					if(!cliente.getChatsActivos().containsKey(list.getSelectedValue())) {
 						if (cliente != null) {
-							MiChat chat = new MiChat(cliente);
+							Chat chat = new Chat(cliente);
 							cliente.getChatsActivos().put(list.getSelectedValue(), chat);
 							chat.setTitle(list.getSelectedValue());
 							chat.setVisible(true);
@@ -220,7 +219,7 @@ public class Main extends JFrame {
 	}
 
 	private void logIn(final Cliente cliente) {
-		cliente.setAccion(Comando.INICIOSESION);
+		cliente.setAccion(Comando.LOGIN);
 		cliente.getPaqueteUsuario().setUsername(user);
 		synchronized (cliente) {
 			cliente.notify();
