@@ -15,7 +15,7 @@ public class Cliente extends Thread {
 	private static String miIp;
 	private ObjectInputStream entrada;
 	private ObjectOutputStream salida;
-	private PaqueteUsuario paqueteUsuario = new PaqueteUsuario();
+	private Usuario usuario = new Usuario();
 	private PaqueteMensaje paqueteMensaje = new PaqueteMensaje();
 	private Map<String, Chat> chatsActivos = new HashMap<>();
 
@@ -47,16 +47,16 @@ public class Cliente extends Thread {
 		synchronized(this) {
 			try {
 
-				paqueteUsuario = new PaqueteUsuario();
-				while (!paqueteUsuario.isInicioSesion()) {
+				usuario = new Usuario();
+				while (!usuario.isInicioSesion()) {
 
 					wait();
 					
 					switch (getAccion()) {
 					
 						case Comando.LOGIN:
-							paqueteUsuario.setComando(Comando.LOGIN);
-							salida.writeObject(gson.toJson(paqueteUsuario));
+							usuario.setComando(Comando.LOGIN);
+							salida.writeObject(gson.toJson(usuario));
 							break;
 							
 						case Comando.PRIVATE:
@@ -71,9 +71,9 @@ public class Cliente extends Thread {
 							break;
 							
 						case Comando.DISCONNECT:
-							paqueteUsuario.setIp(getMiIp());
-							paqueteUsuario.setComando(Comando.DISCONNECT);
-							salida.writeObject(gson.toJson(paqueteUsuario));
+							usuario.setIp(getMiIp());
+							usuario.setComando(Comando.DISCONNECT);
+							salida.writeObject(gson.toJson(usuario));
 							break;
 							
 						default:
@@ -83,8 +83,8 @@ public class Cliente extends Thread {
 					salida.flush();
 				}
 
-				paqueteUsuario.setIp(miIp);
-				salida.writeObject(gson.toJson(paqueteUsuario));
+				usuario.setIp(miIp);
+				salida.writeObject(gson.toJson(usuario));
 				notify();
 				
 			} catch (IOException | InterruptedException e) {
@@ -133,8 +133,8 @@ public class Cliente extends Thread {
 		this.salida = salida;
 	}
 
-	public PaqueteUsuario getPaqueteUsuario() {
-		return paqueteUsuario;
+	public Usuario getUsuario() {
+		return usuario;
 	}
 	
 	public PaqueteMensaje getPaqueteMensaje() {

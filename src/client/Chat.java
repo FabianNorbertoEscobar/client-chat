@@ -24,6 +24,14 @@ public class Chat extends JFrame {
 	private JTextArea chat;
 	private Cliente client;
 
+	public JTextArea getChat() {
+		return chat;
+	}
+
+	public JTextField getTexto() {
+		return texto;
+	}
+
 	public Chat(final Cliente cliente) {
 		setBackground(Color.PINK);
 		this.client = cliente;
@@ -67,7 +75,7 @@ public class Chat extends JFrame {
 						cliente.setAccion(Comando.BROADCAST);
 					}
 					
-					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
+					cliente.getPaqueteMensaje().setUserEmisor(cliente.getUsuario().getUsername());
 					cliente.getPaqueteMensaje().setUserReceptor(getTitle());
 					cliente.getPaqueteMensaje().setMensaje(texto.getText());
 					
@@ -92,7 +100,7 @@ public class Chat extends JFrame {
 						cliente.setAccion(Comando.BROADCAST);
 					}
 					
-					cliente.getPaqueteMensaje().setUserEmisor(cliente.getPaqueteUsuario().getUsername());
+					cliente.getPaqueteMensaje().setUserEmisor(cliente.getUsuario().getUsername());
 					cliente.getPaqueteMensaje().setUserReceptor(getTitle());
 					cliente.getPaqueteMensaje().setMensaje(texto.getText());
 					
@@ -120,13 +128,5 @@ public class Chat extends JFrame {
 		texto.setBounds(10, 399, 438, 50);
 		contentPane.add(texto);
 		texto.setColumns(10);
-	}
-
-	public JTextArea getChat() {
-		return chat;
-	}
-
-	public JTextField getTexto() {
-		return texto;
 	}
 }

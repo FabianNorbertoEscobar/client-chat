@@ -7,12 +7,12 @@ import java.util.Map;
 public class PaqueteDeUsuarios extends Paquete implements Serializable, Cloneable {
 
 		private ArrayList<String> usuarios;
-		private Map<String, PaqueteUsuario> personajesConectados;
+		private Map<String, Usuario> personajesConectados;
 
 		public PaqueteDeUsuarios(){
 		}
 
-		public Map<String, PaqueteUsuario> getPersonajesConectados() {
+		public Map<String, Usuario> getPersonajesConectados() {
 			return personajesConectados;
 		}
 

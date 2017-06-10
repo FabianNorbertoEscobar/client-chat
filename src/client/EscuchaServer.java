@@ -47,9 +47,9 @@ public class EscuchaServer extends Thread {
 				switch (paquete.getComando()) {
 				
 					case Comando.LOGIN:
-						cliente.getPaqueteUsuario().setMensaje(paquete.getMensaje());
+						cliente.getUsuario().setMensaje(paquete.getMensaje());
 						
-						if(paquete.getMensaje().equals(Paquete.msjFracaso)) {
+						if(paquete.getMensaje().equals(Paquete.FAILURE)) {
 							this.stop();
 						} else {
 							usuariosConectados = (ArrayList<String>) gson.fromJson(objetoLeido, PaqueteDeUsuarios.class).getPersonajes();							
@@ -73,7 +73,7 @@ public class EscuchaServer extends Thread {
 								usuariosAntiguos.remove(usuario);
 							}
 						}
-						cliente.getPaqueteUsuario().setListaDeConectados(usuariosConectados);
+						cliente.getUsuario().setListaDeConectados(usuariosConectados);
 						actualizarLista(cliente);
 						break;
 
@@ -119,11 +119,11 @@ public class EscuchaServer extends Thread {
 		DefaultListModel<String> modelo = new DefaultListModel<String>();
 		synchronized (cliente) {
 			try {
-				cliente.wait(300);
+				cliente.wait(200);
 				Main.getList().removeAll();
-				if (cliente.getPaqueteUsuario().getListaDeConectados() != null) {
-					cliente.getPaqueteUsuario().getListaDeConectados().remove(cliente.getPaqueteUsuario().getUsername());
-					for (String cad : cliente.getPaqueteUsuario().getListaDeConectados()) {
+				if (cliente.getUsuario().getListaDeConectados() != null) {
+					cliente.getUsuario().getListaDeConectados().remove(cliente.getUsuario().getUsername());
+					for (String cad : cliente.getUsuario().getListaDeConectados()) {
 						modelo.addElement(cad);
 					}
 					Main.getLblNumeroConectados().setText(String.valueOf(modelo.getSize()));

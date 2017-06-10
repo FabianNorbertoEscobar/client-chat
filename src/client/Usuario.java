@@ -3,14 +3,14 @@ package client;
 import java.io.Serializable;
 import java.util.List;
 
-public class PaqueteUsuario extends Paquete implements Serializable, Cloneable {
+public class Usuario extends Paquete implements Serializable, Cloneable {
 
 	private String username;
 	private boolean inicioSesion;
 	private boolean estado;
 	private List<String> listaDeConectados;
 
-	public PaqueteUsuario(){
+	public Usuario(){
 		estado = true;
 	}
 
@@ -22,7 +22,7 @@ public class PaqueteUsuario extends Paquete implements Serializable, Cloneable {
 		this.listaDeConectados = listaDeConectados;
 	}
 
-	public PaqueteUsuario(String user){
+	public Usuario(String user){
 		username = user;
 		inicioSesion = false;
 		estado = true;

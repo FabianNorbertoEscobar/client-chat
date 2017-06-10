@@ -3,14 +3,13 @@ package client;
 import java.io.Serializable;
 
 public class Paquete implements Serializable, Cloneable {
-	
-	public static String msjExito = "1";
-	public static String msjFracaso = "0";
-	
 	private String mensaje;
 	private String ip;
 	private int comando;
 
+	public static String SUCCESS = "1";
+	public static String FAILURE = "0";
+	
 	public Paquete() {
 	}
 	

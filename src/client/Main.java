@@ -25,19 +25,19 @@ import javax.swing.border.EmptyBorder;
 
 import client.Comando;
 import client.Paquete;
-import client.PaqueteUsuario;
+import client.Usuario;
 import java.awt.Color;
 import java.awt.Font;
 
 public class Main extends JFrame {
 	private String user = null;
 	private Cliente cliente;
-	private PaqueteUsuario paqueteUsuario;
+	private Usuario usuario;
 	
 	private JPanel contentPane;
 	private DefaultListModel<String> modelo = new DefaultListModel<String>();
 	private static JList<String> list = new JList<String>();
-	private JTextField jTFMiNombre;
+	private JTextField nameTextField;
 	private static JLabel lblNumeroConectados = new JLabel("");
 	private static JButton botonMc;
 
@@ -61,6 +61,22 @@ public class Main extends JFrame {
 		});
 	}
 
+	public Usuario getUsuario() {
+		return usuario;
+	}
+	
+	public static JLabel getLblNumeroConectados() {
+		return lblNumeroConectados;
+	}
+	
+	public static JList<String> getList() {
+		return list;
+	}
+	
+	public static JButton getBotonMc() {
+		return botonMc;
+	}
+	
 	public Main() {
 
 		setResizable(false);
@@ -125,12 +141,12 @@ public class Main extends JFrame {
 		botonMc.setBounds(253, 220, 134, 46);
 		contentPane.add(botonMc);
 		
-		jTFMiNombre = new JTextField();
-		jTFMiNombre.setHorizontalAlignment(SwingConstants.LEFT);
-		jTFMiNombre.setEditable(false);
-		jTFMiNombre.setBounds(67, 320, 242, 22);
-		contentPane.add(jTFMiNombre);
-		jTFMiNombre.setColumns(10);
+		nameTextField = new JTextField();
+		nameTextField.setHorizontalAlignment(SwingConstants.LEFT);
+		nameTextField.setEditable(false);
+		nameTextField.setBounds(67, 320, 242, 22);
+		contentPane.add(nameTextField);
+		nameTextField.setColumns(10);
 		list.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
 
 		list.setModel(modelo);
@@ -161,9 +177,9 @@ public class Main extends JFrame {
 						}
 					}
 					
-					if(cliente.getPaqueteUsuario().getMensaje().equals(Paquete.msjExito)) {
+					if(cliente.getUsuario().getMensaje().equals(Paquete.SUCCESS)) {
 						setTitle(user);
-						jTFMiNombre.setText(user);
+						nameTextField.setText(user);
 						actualizarLista(cliente);
 					} else {
 						try {
@@ -220,7 +236,7 @@ public class Main extends JFrame {
 
 	private void logIn(final Cliente cliente) {
 		cliente.setAccion(Comando.LOGIN);
-		cliente.getPaqueteUsuario().setUsername(user);
+		cliente.getUsuario().setUsername(user);
 		synchronized (cliente) {
 			cliente.notify();
 		}
@@ -230,9 +246,9 @@ public class Main extends JFrame {
 		if(cliente != null) {
 			synchronized (cliente) {
 				modelo.removeAllElements();
-				if (cliente.getPaqueteUsuario().getListaDeConectados() != null) {
-					cliente.getPaqueteUsuario().getListaDeConectados().remove(cliente.getPaqueteUsuario().getUsername());
-					for (String cad : cliente.getPaqueteUsuario().getListaDeConectados()) {
+				if (cliente.getUsuario().getListaDeConectados() != null) {
+					cliente.getUsuario().getListaDeConectados().remove(cliente.getUsuario().getUsername());
+					for (String cad : cliente.getUsuario().getListaDeConectados()) {
 						modelo.addElement(cad);
 					}
 					lblNumeroConectados.setText(String.valueOf(modelo.getSize()));
@@ -240,21 +256,5 @@ public class Main extends JFrame {
 				}
 			}
 		}
-	}
-	
-	public PaqueteUsuario getPaqueteUsuario() {
-		return paqueteUsuario;
-	}
-	
-	public static JLabel getLblNumeroConectados() {
-		return lblNumeroConectados;
-	}
-	
-	public static JList<String> getList() {
-		return list;
-	}
-	
-	public static JButton getBotonMc() {
-		return botonMc;
-	}
+	}	
 }
